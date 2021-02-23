@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import random
 
 
+#  五十音词典获取
 def get_dictionary():
     dictionary = {}
     with open("./五十音.csv", "r") as f1:
@@ -13,6 +14,49 @@ def get_dictionary():
             temp_list = str(list1[index]).split(",")
             dictionary[temp_list[0]] = temp_list[1]
     return dictionary
+
+
+def welcome_page():
+    global welcome
+    global selected
+    #  五十音选择
+    welcome.title("あいうえお-selection")
+    welcome.geometry("600x500")
+
+    title_frame = ttk.Frame(welcome)
+    Label(title_frame, text='Select characters you want to recite', font=("Arial Bold", 20)).pack()
+    title_frame.pack()
+
+    character_frame = ttk.Frame(welcome)
+    character_frame.pack()
+    character_frame_l = ttk.Frame(character_frame)
+    character_frame_r = ttk.Frame(character_frame)
+    character_frame_l.pack(side='left')
+    character_frame_r.pack(side='right')
+
+    for i in range(0, 8, 2):
+        Label(character_frame_l, text=lst[5 * i:5 * i + 5], font=("Arial Bold", 20)).pack()
+        ttk.Checkbutton(character_frame_l, variable=selected[i], onvalue=1, offvalue=0).pack()
+
+    for i in range(1, 7, 2):
+        Label(character_frame_r, text=lst[5 * i:5 * i + 5], font=("Arial Bold", 20)).pack()
+        ttk.Checkbutton(character_frame_r, variable=selected[i], onvalue=1, offvalue=0).pack()
+
+    Label(character_frame_r, text=lst[35:38], font=("Arial Bold", 20)).pack()
+    ttk.Checkbutton(character_frame_r, variable=selected[7], onvalue=1, offvalue=0).pack()
+
+    Label(character_frame_l, text=lst[38:43], font=("Arial Bold", 20)).pack()
+    ttk.Checkbutton(character_frame_l, variable=selected[8], onvalue=1, offvalue=0).pack()
+
+    Label(character_frame_r, text=lst[43:45], font=("Arial Bold", 20)).pack()
+    ttk.Checkbutton(character_frame_r, variable=selected[9], onvalue=1, offvalue=0).pack()
+
+    Label(character_frame_l, text=lst[45], font=("Arial Bold", 20)).pack()
+    ttk.Checkbutton(character_frame_l, variable=selected[10], onvalue=1, offvalue=0).pack()
+
+    Button(welcome, text="go", command=recite_start).pack()
+
+    welcome.mainloop()
 
 
 def recite_start():
@@ -42,19 +86,24 @@ def recite_start():
         total_rounds.configure(text='Total: '+str(len(lst_for_recite)))
         input_entry.delete(0, "end")
 
+    def get_list_for_recite():
+        nonlocal current_character
+        temp_list_for_recite = []
+        for index in range(0, 7):
+            if selected[index].get() == 1:
+                temp_list_for_recite = temp_list_for_recite + lst[index * 5:index * 5 + 5]
+        if selected[7].get() == 1:
+            temp_list_for_recite = temp_list_for_recite + lst[35:38]
+        if selected[8].get() == 1:
+            temp_list_for_recite = temp_list_for_recite + lst[38:43]
+        if selected[9].get() == 1:
+            temp_list_for_recite = temp_list_for_recite + lst[43:45]
+        if selected[10].get() == 1:
+            temp_list_for_recite = temp_list_for_recite + list(lst[45])
+        return temp_list_for_recite
+
     current_character = 0
-    lst_for_recite = []
-    for index in range(0, 7):
-        if selected[index].get() == 1:
-            lst_for_recite = lst_for_recite + lst[index * 5:index * 5 + 5]
-    if selected[7].get() == 1:
-        lst_for_recite = lst_for_recite + lst[35:38]
-    if selected[8].get() == 1:
-        lst_for_recite = lst_for_recite + lst[38:43]
-    if selected[9].get() == 1:
-        lst_for_recite = lst_for_recite + lst[43:45]
-    if selected[10].get() == 1:
-        lst_for_recite = lst_for_recite + list(lst[45])
+    lst_for_recite = get_list_for_recite()
 
     if not lst_for_recite:
         messagebox.showinfo(title='hint', message='Please select at least one line')
@@ -101,45 +150,7 @@ if __name__ == '__main__':
     length_of_dic = len(dic)
     original_lst = list(dic.keys())
     lst = original_lst
-
-    #  五十音选择
     welcome = Tk()
-    welcome.title("あいうえお-selection")
-    welcome.geometry("600x500")
+    selected = [IntVar(welcome) for x in range(0, 11)]
 
-    title_frame = ttk.Frame(welcome)
-    Label(title_frame, text='Select characters you want to recite', font=("Arial Bold", 20)).pack()
-    title_frame.pack()
-
-    character_frame = ttk.Frame(welcome)
-    character_frame.pack()
-    character_frame_l = ttk.Frame(character_frame)
-    character_frame_r = ttk.Frame(character_frame)
-    character_frame_l.pack(side='left')
-    character_frame_r.pack(side='right')
-
-    selected = [IntVar() for x in range(0, 11)]
-
-    for i in range(0, 8, 2):
-        Label(character_frame_l, text=lst[5 * i:5 * i + 5], font=("Arial Bold", 20)).pack()
-        ttk.Checkbutton(character_frame_l, variable=selected[i], onvalue=1, offvalue=0).pack()
-
-    for i in range(1, 7, 2):
-        Label(character_frame_r, text=lst[5 * i:5 * i + 5], font=("Arial Bold", 20)).pack()
-        ttk.Checkbutton(character_frame_r, variable=selected[i], onvalue=1, offvalue=0).pack()
-
-    Label(character_frame_r, text=lst[35:38], font=("Arial Bold", 20)).pack()
-    ttk.Checkbutton(character_frame_r, variable=selected[7], onvalue=1, offvalue=0).pack()
-
-    Label(character_frame_l, text=lst[38:43], font=("Arial Bold", 20)).pack()
-    ttk.Checkbutton(character_frame_l, variable=selected[8], onvalue=1, offvalue=0).pack()
-
-    Label(character_frame_r, text=lst[43:45], font=("Arial Bold", 20)).pack()
-    ttk.Checkbutton(character_frame_r, variable=selected[9], onvalue=1, offvalue=0).pack()
-
-    Label(character_frame_l, text=lst[45], font=("Arial Bold", 20)).pack()
-    ttk.Checkbutton(character_frame_l, variable=selected[10], onvalue=1, offvalue=0).pack()
-
-    Button(welcome, text="go", command=recite_start).pack()
-
-    welcome.mainloop()
+    welcome_page()
